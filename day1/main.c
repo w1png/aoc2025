@@ -4,17 +4,13 @@
 #include <string.h>
 
 void part1(char *input) {
-  printf("Part 1 of day 1 input=%s\n", input);
   int result = 0;
   int curr_degrees = 50;
+
   char *token = strtok(input, "\n");
-
   while (token != NULL) {
-    int delta = token[0] == 'L' ? -1 : 1;
-
-    int rest_int = atoi(token + 1);
-
-    curr_degrees = (curr_degrees + delta * rest_int) % 100;
+    curr_degrees =
+        (curr_degrees + (token[0] == 'L' ? -1 : 1) * atoi(token + 1)) % 100;
     if (curr_degrees < 0) {
       curr_degrees = 100 + curr_degrees;
     }
@@ -32,16 +28,11 @@ void part1(char *input) {
 void part2(char *input) {
   int result = 0;
   int curr_degrees = 50;
+
   char *token = strtok(input, "\n");
-
   while (token != NULL) {
-    int delta = token[0] == 'L' ? -1 : 1;
-
-    int rest_int = atoi(token + 1);
-
-    for (int i = 0; i < rest_int; i++) {
-      curr_degrees = (curr_degrees + delta) % 100;
-
+    for (int i = 0; i < atoi(token + 1); i++) {
+      curr_degrees = (curr_degrees + (token[0] == 'L' ? -1 : 1)) % 100;
       if (curr_degrees == 0) {
         result++;
       }
