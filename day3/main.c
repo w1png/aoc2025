@@ -6,15 +6,14 @@
 #include <string.h>
 #include <wchar.h>
 
-int get_first_largest_digit(char *token, size_t *max_i, size_t limit) {
+int get_first_largest_digit(char *token, size_t *max_i,
+                            size_t digits_remaining) {
   int max = 0;
 
-  char *token_copy = malloc(limit + 1);
+  char *token_copy = malloc(strlen(token) + 1);
   strncpy(token_copy, token, strlen(token));
-  printf("token_copy=%s\n", token_copy);
-  for (size_t i = 0; i < limit; i++) {
+  for (size_t i = 0; i < digits_remaining; i++) {
     int curr = token_copy[i] - '0';
-    printf("%d\n", curr);
 
     if (curr > max) {
       max = curr;
@@ -32,15 +31,11 @@ void part1(char *input) {
 
   char *token = strtok(input, "\n");
   while (token != NULL) {
-    size_t token_length = strlen(token);
+    size_t i;
+    int max_dozens = get_first_largest_digit(token, &i, strlen(token) - 1);
 
-    size_t max_dozens_i;
-    int max_dozens =
-        get_first_largest_digit(token, &max_dozens_i, strlen(token) - 1);
-
-    char *token_copy = malloc(token_length + 1);
-    strncpy(token_copy, token + max_dozens_i + 1, token_length - max_dozens_i);
-    int max = get_first_largest_digit(token_copy, NULL, strlen(token_copy));
+    token += i + 1;
+    int max = get_first_largest_digit(token, NULL, strlen(token));
 
     result += (max_dozens * 10) + max;
 
@@ -54,7 +49,22 @@ void part2(char *input) {
   long long result = 0;
 
   char *token = strtok(input, "\n");
+
   while (token != NULL) {
+    size_t prev_index = 0;
+    long long curr = 0;
+
+    for (int i = 0; i < 12; i++) {
+      int digits_remaining = strlen(token) - 11 + i;
+      int first = get_first_largest_digit(token, &prev_index, digits_remaining);
+
+      curr += first * pow(10, 11 - i);
+      token += prev_index + 1;
+    }
+
+    result += curr;
+
+    token = strtok(NULL, "\n");
   }
 
   printf("Result = %lld\n", result);
