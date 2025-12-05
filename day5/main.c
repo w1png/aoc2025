@@ -15,15 +15,12 @@ void part1(char *input) {
   while (token != NULL) {
     if (strstr(token, "-") != NULL) {
       char *copy = strdup(token);
-      char *first = strtok_r(copy, "-", &copy);
-      char *second = strtok_r(NULL, "-", &copy);
-
-      uint64_t first_int = atoll(first);
-      uint64_t second_int = atoll(second);
+      char *from = strtok_r(copy, "-", &copy);
+      char *to = strtok_r(NULL, "-", &copy);
 
       ranges[ranges_i] = malloc(sizeof(uint64_t) * 2);
-      ranges[ranges_i][0] = first_int;
-      ranges[ranges_i][1] = second_int;
+      ranges[ranges_i][0] = atoll(from);
+      ranges[ranges_i][1] = atoll(to);
       ranges_i++;
     } else {
       ids_to_check[ids_to_check_i] = atoll(token);
@@ -54,7 +51,6 @@ void part2(char *input) {
   char *token = strtok(input, "\n");
 
   uint64_t **ranges = malloc(sizeof(uint64_t *) * 256);
-
   int ranges_i = 0;
   while (token != NULL) {
     if (strstr(token, "-") != NULL) {
@@ -62,12 +58,9 @@ void part2(char *input) {
       char *first = strtok_r(copy, "-", &copy);
       char *second = strtok_r(NULL, "-", &copy);
 
-      uint64_t first_int = atoll(first);
-      uint64_t second_int = atoll(second);
-
       ranges[ranges_i] = malloc(sizeof(uint64_t) * 2);
-      ranges[ranges_i][0] = first_int;
-      ranges[ranges_i][1] = second_int;
+      ranges[ranges_i][0] = atoll(first);
+      ranges[ranges_i][1] = atoll(second);
       ranges_i++;
     } else {
       break;
@@ -80,31 +73,24 @@ void part2(char *input) {
   while (were_changes) {
     were_changes = 0;
     for (int k = 0; k < ranges_i - 1; k++) {
-      if (ranges[k] == NULL) {
+      if (ranges[k] == NULL)
         continue;
-      }
 
       uint64_t range_k_from = ranges[k][0];
       uint64_t range_k_to = ranges[k][1];
       for (int l = k + 1; l < ranges_i; l++) {
-        if (ranges[l] == NULL) {
+        if (ranges[l] == NULL)
           continue;
-        }
         uint64_t range_l_from = ranges[l][0];
         uint64_t range_l_to = ranges[l][1];
         if (range_k_from <= range_l_to && range_l_from <= range_k_to) {
-          uint64_t new_range_from =
+          ranges[k][0] =
               range_k_from < range_l_from ? range_k_from : range_l_from;
-          uint64_t new_range_to =
-              range_k_to > range_l_to ? range_k_to : range_l_to;
-
-          ranges[k][0] = new_range_from;
-          ranges[k][1] = new_range_to;
+          ranges[k][1] = range_k_to > range_l_to ? range_k_to : range_l_to;
           ranges[l] = NULL;
 
           were_changes = 1;
           goto end_of_while;
-          break;
         }
       }
     }
@@ -114,15 +100,10 @@ void part2(char *input) {
 
   uintmax_t result = 0;
   for (int k = 0; k < ranges_i; k++) {
-    if (ranges[k] == NULL) {
+    if (ranges[k] == NULL)
       continue;
-    }
 
-    uint64_t diff = ranges[k][1] - ranges[k][0] + 1;
-    if (diff < 0) {
-      continue;
-    }
-    result += diff;
+    result += ranges[k][1] - ranges[k][0] + 1;
   }
 
   free(ranges);
